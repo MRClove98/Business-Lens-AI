@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#101828">
+<title>BusinessLens AI — Business Intelligence Studio</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<style>
+:root{
+ --bg:#f4f6fa;--surface:#fff;--surface2:#f8fafc;--ink:#101828;--muted:#667085;--line:#e4e7ec;
+ --primary:#635bff;--primary2:#7c3aed;--green:#12b76a;--yellow:#f79009;--red:#f04438;
+ --blue:#2e90fa;--shadow:0 12px 40px rgba(16,24,40,.07);--radius:18px;
+}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--bg);color:var(--ink);font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
+button,input,select,textarea{font:inherit}button{cursor:pointer}
+.app{min-height:100vh}.sidebar{position:fixed;z-index:20;inset:0 auto 0 0;width:252px;background:#101828;color:#d0d5dd;padding:20px 14px;display:flex;flex-direction:column}
+.brand{display:flex;align-items:center;gap:11px;padding:8px 10px 26px;color:white;font-weight:800;font-size:18px}.brandmark{width:38px;height:38px;border-radius:12px;background:linear-gradient(135deg,#7c6cff,#a855f7);display:grid;place-items:center;font-weight:900;box-shadow:0 7px 20px #635bff55}
+.nav-section{font-size:10px;letter-spacing:1.1px;text-transform:uppercase;color:#667085;padding:15px 10px 7px}.nav button{display:flex;gap:11px;align-items:center;width:100%;padding:11px 12px;margin:2px 0;border-radius:11px;border:0;background:transparent;color:#98a2b3;text-align:left}.nav button:hover,.nav button.active{background:#1d2939;color:#fff}.nav button .ic{width:20px;text-align:center}.sidebar-bottom{margin-top:auto;border-top:1px solid #1d2939;padding-top:14px}.mini-user{display:flex;gap:10px;align-items:center;padding:8px}.avatar{width:30px;height:30px;border-radius:50%;background:#344054;display:grid;place-items:center;color:white;font-size:12px;font-weight:700}
+.main{margin-left:252px;padding:24px;max-width:1680px}.topbar{display:flex;justify-content:space-between;align-items:center;gap:18px;margin-bottom:20px}.eyebrow{font-size:11px;color:var(--primary);font-weight:800;text-transform:uppercase;letter-spacing:1.1px}.topbar h1{margin:3px 0;font-size:25px}.topbar p{margin:0;color:var(--muted);font-size:13px}.actions{display:flex;gap:8px;flex-wrap:wrap}.btn{border:1px solid var(--line);background:#fff;color:var(--ink);border-radius:10px;padding:10px 14px;box-shadow:0 2px 5px #10182808}.btn:hover{transform:translateY(-1px)}.btn.primary{background:var(--primary);color:white;border-color:var(--primary);box-shadow:0 7px 18px #635bff2e}.btn.dark{background:#101828;color:#fff;border-color:#101828}.btn.ghost{background:#f5f3ff;color:#5149dc;border-color:#ddd6fe}.btn.sm{padding:7px 10px;font-size:12px}
+.hero{position:relative;overflow:hidden;border-radius:24px;padding:30px;background:radial-gradient(circle at 80% 15%,#8b5cf633,transparent 30%),linear-gradient(135deg,#101828,#29234b 65%,#3b2f67);color:white;box-shadow:var(--shadow);display:flex;justify-content:space-between;gap:24px;align-items:flex-end}.hero:after{content:"";position:absolute;width:250px;height:250px;border-radius:50%;right:-80px;bottom:-130px;background:#ffffff09}.hero-content{position:relative;z-index:1}.hero .badge{display:inline-flex;padding:6px 10px;border-radius:99px;background:#ffffff12;border:1px solid #ffffff18;color:#d9d6ff;font-size:11px;font-weight:700}.hero h2{font-size:34px;line-height:1.08;margin:13px 0 8px;letter-spacing:-1px}.hero p{margin:0;color:#c9cdd8;max-width:650px}.hero-actions{position:relative;z-index:1;display:flex;gap:8px}.hero .btn{background:#fff;color:#171b31;border-color:#fff}
+.page{animation:fade .18s ease}@keyframes fade{from{opacity:.5;transform:translateY(4px)}to{opacity:1;transform:none}}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:20px;box-shadow:var(--shadow);margin:18px 0}.card.tight{padding:15px}.section-title{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:14px}.section-title h3{font-size:16px;margin:0}.section-title p,.section-title span{font-size:11px;color:var(--muted);margin:0}
+.grid{display:grid;gap:13px}.g2{grid-template-columns:repeat(2,minmax(0,1fr))}.g3{grid-template-columns:repeat(3,minmax(0,1fr))}.g4{grid-template-columns:repeat(4,minmax(0,1fr))}
+.field label{display:block;font-size:11px;font-weight:750;color:#475467;margin-bottom:6px}.field input,.field select,.field textarea{width:100%;border:1px solid var(--line);background:#fcfcfd;border-radius:10px;padding:10px 11px;outline:none;color:var(--ink)}.field textarea{min-height:82px;resize:vertical}.field input:focus,.field select:focus,.field textarea:focus{border-color:#a49cff;box-shadow:0 0 0 3px #635bff12}
+.kpi{padding:16px;border:1px solid var(--line);border-radius:14px;background:linear-gradient(180deg,#fff,#fbfcff)}.kpi .label{font-size:11px;color:var(--muted)}.kpi .value{font-size:24px;font-weight:850;margin:5px 0 2px;letter-spacing:-.5px}.kpi .sub{font-size:10px;color:var(--muted)}.kpi .trend{font-size:10px;font-weight:700;margin-top:5px}.positive{color:var(--green)}.negative{color:var(--red)}
+.notice{border-radius:12px;padding:12px 14px;font-size:12px;line-height:1.5;border:1px solid #f2dfad;background:#fff9eb;color:#795d12}.notice.info{background:#eff6ff;border-color:#d6e7ff;color:#24558c}.notice.danger{background:#fff1f0;border-color:#ffd5d1;color:#9b2c25}
+.tag{display:inline-flex;align-items:center;border:1px solid var(--line);background:#f8fafc;border-radius:7px;padding:4px 7px;font-size:10px;color:#667085}.confidence{display:inline-flex;align-items:center;gap:5px;font-size:10px;font-weight:750}.dot{width:7px;height:7px;border-radius:50%;display:inline-block}.high .dot{background:var(--green)}.medium .dot{background:var(--yellow)}.low .dot{background:var(--red)}
+.table-wrap{overflow:auto;border:1px solid var(--line);border-radius:12px}.table{width:100%;border-collapse:collapse;min-width:700px}.table th,.table td{font-size:11px;text-align:left;padding:10px 11px;border-bottom:1px solid var(--line)}.table th{background:#f8fafc;color:#667085;font-weight:750}.table tr:last-child td{border-bottom:0}
+.chartbox{height:290px;position:relative}.chartbox.large{height:350px}.formula{border:1px dashed #d0d5dd;background:#f9fafb;border-radius:12px;padding:13px;color:#475467;font-size:11px;line-height:1.6}.formula b{color:#101828}.pill{padding:4px 8px;border-radius:99px;background:#f2f4f7;color:#475467;font-size:10px}
+.slider{display:grid;grid-template-columns:1fr 82px;gap:10px;align-items:center}.slider input[type=range]{width:100%;accent-color:var(--primary)}.slider input[type=number]{width:100%}
+.opportunity{border:1px solid var(--line);border-radius:14px;padding:15px;position:relative}.opportunity .score{position:absolute;right:12px;top:12px}.opportunity h4{margin:0 55px 5px 0;font-size:14px}.opportunity p{margin:7px 0;font-size:11px;color:var(--muted);line-height:1.5}.opportunity .bar{height:6px;background:#eaecf0;border-radius:99px;overflow:hidden;margin-top:9px}.opportunity .bar i{display:block;height:100%;background:linear-gradient(90deg,#635bff,#8b5cf6)}
+.chat{height:380px;overflow:auto;background:#f8fafc;border:1px solid var(--line);border-radius:14px;padding:14px}.msg{max-width:86%;padding:10px 12px;border-radius:13px;font-size:12px;line-height:1.55;margin:8px 0}.msg.ai{background:#fff;border:1px solid var(--line)}.msg.user{background:#635bff;color:#fff;margin-left:auto}.chatbar{display:flex;gap:8px;margin-top:9px}.chatbar input{flex:1;border:1px solid var(--line);border-radius:10px;padding:11px}
+.report{line-height:1.65;font-size:13px}.report h2{font-size:18px;margin:24px 0 8px}.report h3{font-size:14px;margin:18px 0 7px}.report ul,.report ol{padding-left:20px}.report .report-head{padding:18px;border-radius:14px;background:linear-gradient(135deg,#f5f3ff,#f8fafc);border:1px solid #e4e0ff}.report-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:9px;margin:12px 0}.report-stat{background:#fff;border:1px solid var(--line);border-radius:10px;padding:11px}.report-stat b{display:block;font-size:17px}.report-stat span{font-size:10px;color:var(--muted)}
+.progress{height:8px;border-radius:99px;background:#eaecf0;overflow:hidden}.progress i{display:block;height:100%;background:linear-gradient(90deg,#635bff,#8b5cf6)}
+.data-chip{display:flex;gap:8px;align-items:center}.data-chip .ico{width:28px;height:28px;border-radius:8px;background:#f2f4f7;display:grid;place-items:center}.empty{text-align:center;padding:28px;color:var(--muted);font-size:12px}
+.mobile-nav{display:none}.hidden{display:none!important}.footer-note{font-size:10px;color:#98a2b3;margin:20px 2px}.toast{position:fixed;z-index:100;right:20px;bottom:20px;background:#101828;color:#fff;border-radius:10px;padding:12px 15px;font-size:12px;box-shadow:var(--shadow)}
+.presentation .sidebar,.presentation .topbar,.presentation .footer-note{display:none}.presentation .main{margin:0 auto;max-width:1400px}.presentation .card{box-shadow:none}.presentation .hero{min-height:220px}.presentation .page:not(#dashboard){display:none!important}
+@media(max-width:1050px){.sidebar{width:76px}.brand span,.nav-section,.nav button span,.sidebar-bottom{display:none}.nav button{justify-content:center}.main{margin-left:76px}.g4{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:720px){.sidebar{display:none}.main{margin:0;padding:12px 12px 90px}.mobile-nav{display:flex;position:fixed;z-index:30;left:10px;right:10px;bottom:10px;background:#101828;border-radius:16px;padding:7px;box-shadow:0 10px 30px #10182833;justify-content:space-around}.mobile-nav button{background:transparent;color:#98a2b3;border:0;padding:7px 8px;font-size:17px}.mobile-nav button span{display:block;font-size:8px}.topbar{align-items:flex-start;flex-direction:column}.actions{width:100%}.hero{padding:22px;display:block}.hero h2{font-size:27px}.hero-actions{margin-top:16px}.g2,.g3,.g4{grid-template-columns:1fr}.chartbox,.chartbox.large{height:270px}.report-grid{grid-template-columns:repeat(2,1fr)}}
+@media print{.sidebar,.topbar,.actions,.mobile-nav,.footer-note,.btn{display:none!important}.main{margin:0;padding:0}.card{box-shadow:none;border:0}.page.hidden{display:block!important}.report{font-size:11pt}}
+</style>
+</head>
+<body>
+<div class="app">
+<aside class="sidebar">
+ <div class="brand"><div class="brandmark">B</div><span>BusinessLens AI</span></div>
+ <div class="nav">
+  <div class="nav-section">Analyze</div>
+  <button class="active" onclick="go('dashboard')"><span class="ic">🏠</span><span>Dashboard</span></button>
+  <button onclick="go('location')"><span class="ic">📍</span><span>Location</span></button>
+  <button onclick="go('competition')"><span class="ic">🏪</span><span>Competition</span></button>
+  <button onclick="go('products')"><span class="ic">📦</span><span>Products</span></button>
+  <button onclick="go('pricing')"><span class="ic">💰</span><span>Pricing</span></button>
+  <button onclick="go('finances')"><span class="ic">📊</span><span>Finances</span></button>
+  <button onclick="go('scenarios')"><span class="ic">📈</span><span>Scenarios</span></button>
+  <div class="nav-section">AI & Output</div>
+  <button onclick="go('advisor')"><span class="ic">🤖</span><span>AI Advisor</span></button>
+  <button onclick="go('report')"><span class="ic">📄</span><span>Report</span></button>
+  <div class="nav-section">System</div>
+  <button onclick="go('settings')"><span class="ic">⚙️</span><span>Settings</span></button>
+ </div>
+ <div class="sidebar-bottom"><div class="mini-user"><div class="avatar">S</div><div><b style="font-size:11px;color:#fff">Student Workspace</b><div style="font-size:9px;color:#667085">Local analysis</div></div></div></div>
+</aside>
+
+<main class="main">
+<header class="topbar">
+ <div><div class="eyebrow">Business Intelligence Studio</div><h1>AI Business Analyzer</h1><p>Evidence → assumptions → calculations → insights.</p></div>
+ <div class="actions"><button class="btn" onclick="newAnalysis()">＋ New</button><button class="btn" onclick="$('fileInput').click()">📊 Import</button><button class="btn ghost" onclick="go('settings')">⚙ Settings</button><input id="fileInput" type="file" accept=".xlsx,.xls,.csv" hidden onchange="importFile(event)"></div>
+</header>
+
+<section id="dashboard" class="page">
+ <div class="hero">
+  <div class="hero-content"><div class="badge">✦ AI-ASSISTED • TRACEABLE • EDUCATIONAL</div><h2>Could your business idea work?</h2><p>Model the market, competition, pricing, costs, revenue and scenarios — while keeping facts separate from estimates.</p></div>
+  <div class="hero-actions"><button class="btn" onclick="loadDemo()">✨ Try Demo</button><button class="btn" onclick="analyze()">Generate Report →</button></div>
+ </div>
+ <div class="card">
+  <div class="section-title"><div><h3>Business setup</h3><p>Everything here is editable.</p></div><span class="tag">STEP 1 · INPUT</span></div>
+  <div class="grid g3">
+   <div class="field"><label>Business type</label><input id="businessType" value="Bakery" oninput="saveAndUpdate()"></div>
+   <div class="field"><label>Specific location</label><input id="locationInput" value="Sukhumvit, Bangkok" oninput="saveAndUpdate()"></div>
+   <div class="field"><label>Target customers</label><input id="target" value="Students, office workers and families" oninput="saveAndUpdate()"></div>
+   <div class="field"><label>Starting budget (฿)</label><input id="budget" type="number" value="1000000" oninput="saveAndUpdate()"></div>
+   <div class="field"><label>Expected opening date</label><input id="opening" type="date" value="2027-01-15" oninput="saveAndUpdate()"></div>
+   <div class="field"><label>Business size</label><select id="size" onchange="saveAndUpdate()"><option>Small</option><option>Medium</option><option>Large</option></select></div>
+  </div>
+  <div class="field" style="margin-top:13px"><label>Business description</label><textarea id="description" placeholder="What makes this business different?"></textarea></div>
+  <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:14px"><button class="btn primary" onclick="analyze()">✨ Analyze</button><button class="btn" onclick="loadDemo()">Load Demo</button><span id="dataStatus" class="tag">DEMO DATA — NOT LIVE DATA</span></div>
+ </div>
+ <div class="notice">⚠️ <b>Important:</b> BusinessLens generates estimates and calculations. It does not guarantee business success. Verify important local facts, prices, rent, regulations, demand and competitors independently.</div>
+ <div id="kpis" class="grid g4" style="margin-top:18px"></div>
+ <div class="grid g2" style="margin-top:18px">
+  <div class="card" style="margin:0"><div class="section-title"><h3>Financial pulse</h3><span>Current assumptions</span></div><div class="chartbox"><canvas id="summaryChart"></canvas></div></div>
+  <div class="card" style="margin:0"><div class="section-title"><h3>What the model is saying</h3><span id="summaryConfidence"></span></div><div id="summaryText"></div></div>
+ </div>
+ <div class="card"><div class="section-title"><h3>Analysis completeness</h3><span id="completenessLabel"></span></div><div class="progress"><i id="completenessBar" style="width:45%"></i></div><div id="completenessItems" class="grid g3" style="margin-top:13px"></div></div>
+</section>
+
+<section id="location" class="page hidden">
+ <div class="card"><div class="section-title"><div><h3>📍 Location intelligence</h3><p>Use verified sources or manual observations.</p></div><span class="tag">NO FABRICATED LIVE DATA</span></div>
+ <div class="grid g3"><div class="field"><label>Specific location</label><input id="loc2" oninput="sync('locationInput',this.value)"></div><div class="field"><label>Location type</label><select id="locType"><option>Street / district</option><option>Shopping mall</option><option>University area</option><option>Train station</option><option>Exact business location</option></select></div><div class="field"><label>Research source / URL</label><input id="locSource" placeholder="Optional source"></div></div>
+ <div class="notice info" style="margin-top:14px">🌐 This standalone build intentionally does not pretend to have internet access. Add verified local observations below, or connect a secure backend/API later.</div>
+ <div class="grid g4" style="margin-top:14px"><div class="field"><label>Population</label><input id="population" type="number" placeholder="Not provided" oninput="updateAll()"></div><div class="field"><label>Average income / month</label><input id="income" type="number" placeholder="Not provided" oninput="updateAll()"></div><div class="field"><label>Foot traffic / day</label><input id="footfall" type="number" placeholder="Not provided" oninput="updateAll()"></div><div class="field"><label>Nearby competitors</label><input id="nearby" type="number" value="12" oninput="updateAll()"></div></div>
+ <div class="section-title" style="margin-top:20px"><h3>Data provenance</h3><span>Every value should have a source.</span></div>
+ <div class="table-wrap"><table class="table"><thead><tr><th>Data</th><th>Value</th><th>Source</th><th>Date</th><th>Classification</th><th>Confidence</th></tr></thead><tbody id="locationTable"></tbody></table></div>
+ </div>
+</section>
+
+<section id="competition" class="page hidden">
+ <div class="card"><div class="section-title"><div><h3>🏪 Competition intelligence</h3><p>Spreadsheet rows remain user-provided unless their source says otherwise.</p></div><div><button class="btn sm" onclick="$('fileInput').click()">📊 Import</button> <button class="btn sm" onclick="addCompetitor()">＋ Add row</button></div></div>
+ <div id="fileInfo" class="notice info hidden" style="margin-bottom:12px"></div>
+ <div class="grid g4" style="margin-bottom:14px" id="compStats"></div>
+ <div class="table-wrap"><table class="table"><thead><tr><th>Competitor</th><th>Distance</th><th>Category</th><th>Avg Price</th><th>Rating</th><th>Products</th><th>Source</th></tr></thead><tbody id="competitorBody"></tbody></table></div>
+ </div>
+ <div class="card"><div class="section-title"><h3>Competitor pricing distribution</h3><span id="compConfidence"></span></div><div class="chartbox large"><canvas id="compChart"></canvas></div></div>
+</section>
+
+<section id="products" class="page hidden"><div class="card"><div class="section-title"><div><h3>📦 Potential market opportunities</h3><p>These are hypotheses generated from category + competitor context.</p></div><span class="tag">NOT GUARANTEED DEMAND</span></div><div id="opportunities" class="grid g3"></div></div></section>
+
+<section id="pricing" class="page hidden">
+ <div class="card"><div class="section-title"><div><h3>💰 Pricing laboratory</h3><p>Formula-driven pricing with competitor context.</p></div><span class="tag">STEP 4 · PRICING</span></div>
+ <div class="grid g3"><div class="field"><label>Cost / item</label><input id="costItem" type="number" value="65" oninput="updateAll()"></div><div class="field"><label>Labour / item</label><input id="labourItem" type="number" value="12" oninput="updateAll()"></div><div class="field"><label>Packaging / item</label><input id="packItem" type="number" value="5" oninput="updateAll()"></div><div class="field"><label>Rent allocation / item</label><input id="rentItem" type="number" value="8" oninput="updateAll()"></div><div class="field"><label>Utilities / item</label><input id="utilItem" type="number" value="3" oninput="updateAll()"></div><div class="field"><label>Desired margin (%)</label><input id="margin" type="number" value="40" oninput="updateAll()"></div></div>
+ <div id="priceKpis" class="grid g4" style="margin-top:17px"></div>
+ <div class="grid g2" style="margin-top:17px"><div class="card tight" style="margin:0"><div class="section-title"><h3>Price positioning</h3></div><div class="chartbox"><canvas id="priceChart"></canvas></div></div><div class="card tight" style="margin:0"><div class="section-title"><h3>How was this calculated?</h3></div><div id="priceFormula" class="formula"></div></div></div>
+ </div>
+</section>
+
+<section id="finances" class="page hidden">
+ <div class="card"><div class="section-title"><div><h3>📊 Financial model</h3><p>Change an assumption and the entire model recalculates.</p></div><span class="tag">STEP 5 · FINANCES</span></div>
+ <div class="section-title"><h3>Monthly costs</h3><span>฿ / month</span></div>
+ <div class="grid g3"><div class="field"><label>Rent</label><input id="rent" type="number" value="80000" oninput="updateAll()"></div><div class="field"><label>Salaries</label><input id="salary" type="number" value="90000" oninput="updateAll()"></div><div class="field"><label>Internet / software / insurance</label><input id="fixedOther" type="number" value="15000" oninput="updateAll()"></div><div class="field"><label>Ingredients / materials</label><input id="ingredients" type="number" value="65000" oninput="updateAll()"></div><div class="field"><label>Packaging</label><input id="packaging" type="number" value="12000" oninput="updateAll()"></div><div class="field"><label>Electricity + water</label><input id="utilities" type="number" value="18000" oninput="updateAll()"></div><div class="field"><label>Marketing</label><input id="marketing" type="number" value="12000" oninput="updateAll()"></div><div class="field"><label>Delivery + payment fees</label><input id="fees" type="number" value="10000" oninput="updateAll()"></div><div class="field"><label>Other variable costs</label><input id="variableOther" type="number" value="5000" oninput="updateAll()"></div></div>
+ <div id="financeKpis" class="grid g4" style="margin-top:17px"></div>
+ <div class="grid g2" style="margin-top:17px">
+  <div class="card tight" style="margin:0"><div class="section-title"><h3>Revenue vs expenses</h3></div><div class="chartbox"><canvas id="financeChart"></canvas></div></div>
+  <div class="card tight" style="margin:0"><div class="section-title"><h3>Revenue simulator</h3><span>Live</span></div>
+   <div class="field"><label>Customers / day</label><div class="slider"><input id="customers" type="range" min="5" max="500" value="100" oninput="syncRange(this,'customersN');updateAll()"><input id="customersN" type="number" value="100" oninput="syncNum(this,'customers');updateAll()"></div></div>
+   <div class="field" style="margin-top:12px"><label>Average spending / customer</label><div class="slider"><input id="spend" type="range" min="20" max="1000" value="150" oninput="syncRange(this,'spendN');updateAll()"><input id="spendN" type="number" value="150" oninput="syncNum(this,'spend');updateAll()"></div></div>
+   <div class="field" style="margin-top:12px"><label>Opening days / month</label><div class="slider"><input id="days" type="range" min="10" max="31" value="26" oninput="syncRange(this,'daysN');updateAll()"><input id="daysN" type="number" value="26" oninput="syncNum(this,'days');updateAll()"></div></div>
+   <div id="revenueBreakdown" class="formula" style="margin-top:14px"></div>
+  </div>
+ </div>
+ </div>
+</section>
+
+<section id="scenarios" class="page hidden">
+ <div class="card"><div class="section-title"><div><h3>📈 Scenario studio</h3><p>Scenarios stress-test assumptions; they are not predictions.</p></div></div>
+ <div class="table-wrap"><table class="table"><thead><tr><th>Metric</th><th>🔴 Conservative</th><th>🟡 Expected</th><th>🟢 High Demand</th></tr></thead><tbody id="scenarioBody"></tbody></table></div>
+ <div class="chartbox large" style="margin-top:17px"><canvas id="scenarioChart"></canvas></div></div>
+ <div class="card"><div class="section-title"><div><h3>Break-even analysis</h3><p>How much must you sell before fixed costs are covered?</p></div></div><div id="breakEvenKpis" class="grid g4"></div><div class="chartbox large" style="margin-top:17px"><canvas id="breakEvenChart"></canvas></div><div id="breakEvenFormula" class="formula" style="margin-top:13px"></div></div>
+</section>
+
+<section id="advisor" class="page hidden"><div class="card"><div class="section-title"><div><h3>🤖 BusinessLens AI Advisor</h3><p>Context-aware guidance based on your current model.</p></div><span class="tag">OFFLINE ADVISOR</span></div>
+ <div id="quickPrompts" style="display:flex;gap:7px;flex-wrap:wrap;margin-bottom:10px"><button class="btn sm" onclick="quickAsk('Why are my costs high?')">Why are costs high?</button><button class="btn sm" onclick="quickAsk('How can I increase profit?')">Increase profit</button><button class="btn sm" onclick="quickAsk('What should I research next?')">Research next</button><button class="btn sm" onclick="quickAsk('What price should I charge?')">Pricing</button></div>
+ <div id="chat" class="chat"><div class="msg ai">Hi! I’m BusinessLens AI. I can explain the model, identify important assumptions, and suggest research questions. I’ll distinguish calculations from unverified claims.</div></div>
+ <div class="chatbar"><input id="chatInput" placeholder="Ask about your business analysis…" onkeydown="if(event.key==='Enter')askAI()"><button class="btn primary" onclick="askAI()">Send</button></div>
+ <div class="notice info" style="margin-top:11px">A real generative AI integration would require a secure server-side proxy. Never expose an AI API key in this HTML file.</div>
+ </div></section>
+
+<section id="report" class="page hidden"><div class="card"><div class="section-title"><div><h3>📄 Decision-ready business report</h3><p>Designed for classroom presentations and business planning.</p></div><div><button class="btn sm" onclick="window.print()">🖨 Print / PDF</button><button class="btn sm" onclick="downloadReport()">⬇ TXT</button></div></div><div id="reportContent" class="report"></div></div></section>
+
+<section id="settings" class="page hidden"><div class="card"><div class="section-title"><div><h3>⚙ Settings & modes</h3><p>Customize the analysis experience.</p></div></div>
+ <div class="grid g2"><label class="data-chip"><span class="ico">🎓</span><span><b>Student Mode</b><br><small style="color:var(--muted)">Explain business concepts in simple language.</small></span><input id="studentMode" type="checkbox" checked onchange="updateAll()"></label><label class="data-chip"><span class="ico">📊</span><span><b>Presentation Mode</b><br><small style="color:var(--muted)">Focus the screen on the presentation dashboard.</small></span><input id="presentationMode" type="checkbox" onchange="presentationToggle()"></label></div>
+ <div class="section-title" style="margin-top:25px"><h3>Data handling</h3></div><div class="notice info">Spreadsheet data is processed in the browser by this standalone build. No spreadsheet contents are uploaded by BusinessLens itself. Live data providers or AI services should be connected through explicit, secure integrations.</div>
+ <div class="section-title" style="margin-top:25px"><h3>Local workspace</h3></div><button class="btn" onclick="saveState();toast('Saved locally.')">💾 Save</button> <button class="btn" onclick="loadDemo()">Reset to Demo</button> <button class="btn" onclick="clearLocal()">Clear Saved State</button>
+ </div></section>
+
+<p class="footer-note">BusinessLens AI • Educational business-intelligence prototype • Verified data, user data, calculated values and AI estimates should always be distinguished.</p>
+</main>
+</div>
+<div class="mobile-nav"><button onclick="go('dashboard')">🏠<span>Home</span></button><button onclick="go('competition')">🏪<span>Market</span></button><button onclick="go('finances')">📊<span>Finance</span></button><button onclick="go('advisor')">🤖<span>AI</span></button><button onclick="go('report')">📄<span>Report</span></button></div>
+<div id="toast" class="toast hidden"></div>
+
+<script>
+const $=id=>document.getElementById(id), money=n=>'฿'+Math.round(Number(n)||0).toLocaleString('en-US'), pct=n=>(Number(n)||0).toFixed(1)+'%';
+let competitors=[
+{name:"Demo Bakery A",distance:.5,category:"Bakery",price:120,rating:4.5,products:"Bread / Pastries",source:"DEMO DATA"},
+{name:"Demo Bakery B",distance:1.1,category:"Bakery",price:155,rating:4.3,products:"Cakes / Pastries",source:"DEMO DATA"},
+{name:"Demo Bakery C",distance:1.8,category:"Bakery",price:135,rating:4.6,products:"Bread / Cookies",source:"DEMO DATA"},
+{name:"Demo Café D",distance:2.2,category:"Café",price:165,rating:4.4,products:"Drinks / Sandwiches",source:"DEMO DATA"},
+{name:"Demo Bakehouse E",distance:2.7,category:"Bakery",price:180,rating:4.2,products:"Sourdough / Cakes",source:"DEMO DATA"}
+];
+let charts={};
+const val=id=>Number($(id)?.value)||0;
+function toast(s){$("toast").textContent=s;$("toast").classList.remove("hidden");setTimeout(()=>$("toast").classList.add("hidden"),2300)}
+function go(id){document.querySelectorAll(".page").forEach(x=>x.classList.add("hidden"));$(id).classList.remove("hidden");document.querySelectorAll(".nav button").forEach(b=>b.classList.remove("active"));let b=[...document.querySelectorAll(".nav button")].find(b=>b.getAttribute("onclick")?.includes("'"+id+"'"));if(b)b.classList.add("active");if(id==="report")renderReport();updateAll();window.scrollTo({top:0,behavior:"smooth"})}
+function esc(s){return String(s??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]))}
+function sync(target,v){$(target).value=v;saveAndUpdate()}function syncRange(r,n){$(n).value=r.value}function syncNum(n,r){$(r).value=n.value}
+function conf(level,reason=""){let icon=level==="high"?"🟢":level==="medium"?"🟡":"🔴";return `<span class="confidence ${level}"><span class="dot"></span>${icon} ${level[0].toUpperCase()+level.slice(1)}${reason?" · "+reason:""}</span>`}
+function destroy(k){if(charts[k]){charts[k].destroy();delete charts[k]}}
+function makeChart(k,id,type,data,opts={}){destroy(k);charts[k]=new Chart($(id),{type,data,options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:"bottom"}},...opts}})}
+function calculations(){
+ const c=val("customersN"),spend=val("spendN"),days=val("daysN"),rev=c*spend*days;
+ const fixed=val("rent")+val("salary")+val("fixedOther"),variable=val("ingredients")+val("packaging")+val("utilities")+val("marketing")+val("fees")+val("variableOther"),expenses=fixed+variable,profit=rev-expenses;
+ const unitCost=val("costItem")+val("labourItem")+val("packItem")+val("rentItem")+val("utilItem"),m=val("margin")/100,minPrice=m<1?unitCost/(1-m):0;
+ const prices=competitors.map(c=>+c.price).filter(Boolean),avg=prices.length?prices.reduce((a,b)=>a+b,0)/prices.length:0,median=prices.length?[...prices].sort((a,b)=>a-b)[Math.floor(prices.length/2)]:0;
+ const rec=avg?Math.max(minPrice,avg):minPrice,direct=val("costItem")+val("labourItem")+val("packItem"),contrib=rec-direct,be=contrib>0?fixed/contrib:Infinity,ber=be*rec;
+ return {c,spend,days,rev,fixed,variable,expenses,profit,unitCost,minPrice,avg,median,rec,direct,contrib,be,ber,items:c*days};
+}
+function updateAll(){
+ const x=calculations();renderKpis(x);renderSummary(x);renderCompleteness();renderLocation();renderCompetitors();renderProducts(x);renderPrice(x);renderFinance(x);renderScenarios(x);renderBreakEven(x);renderCharts(x);saveState();
+}
+function renderKpis(x){$("kpis").innerHTML=[
+["Estimated monthly revenue",money(x.rev),"Customers × spend × days",""],
+["Estimated monthly expenses",money(x.expenses),"Fixed + variable costs",""],
+["Estimated monthly profit",money(x.profit),"Revenue − expenses",x.profit>=0?"positive":"negative"],
+["Break-even sales",isFinite(x.ber)?money(x.ber):"N/A","Based on current unit economics",""]
+].map(a=>`<div class="kpi"><div class="label">${a[0]}</div><div class="value ${a[3]}">${a[1]}</div><div class="sub">${a[2]}</div></div>`).join("")}
+function renderSummary(x){
+ const margin=x.rev?x.profit/x.rev*100:0, dataCount=competitors.length, level=dataCount>=10?"high":dataCount>=5?"medium":"low";
+ $("summaryConfidence").innerHTML=conf(level,dataCount+" competitor rows");
+ $("summaryText").innerHTML=`<div class="notice ${x.profit<0?"danger":"info"}"><b>${esc($("businessType").value)}</b> in <b>${esc($("locationInput").value)}</b> currently models ${money(x.rev)} monthly revenue, ${money(x.expenses)} expenses and ${money(x.profit)} profit.</div><div class="grid g2" style="margin-top:12px"><div class="formula"><b>Profit margin</b><br>${pct(margin)}<br><small>Profit ÷ revenue</small></div><div class="formula"><b>Biggest model driver</b><br>${x.c} customers/day × ${money(x.spend)} spend<br><small>Both are assumptions.</small></div></div><p style="font-size:11px;color:var(--muted);margin-top:12px">A positive model result does not mean the business is viable. It means the current assumptions produce a positive calculation.</p>`;
+}
+function renderCompleteness(){
+ let checks=[["Business setup",!!$("businessType").value&&!!$("locationInput").value],["Competitor data",competitors.length>0],["Competitor prices",competitors.filter(x=>+x.price>0).length>=3],["Location evidence",!!$("population").value||!!$("footfall").value||!!$("income").value],["Cost assumptions",val("rent")>0&&val("salary")>0],["Revenue assumptions",val("customersN")>0&&val("spendN")>0]];
+ let score=Math.round(checks.filter(x=>x[1]).length/checks.length*100);$("completenessBar").style.width=score+"%";$("completenessLabel").textContent=score+"% complete";
+ $("completenessItems").innerHTML=checks.map(c=>`<div class="data-chip"><span class="ico">${c[1]?"✓":"!"}</span><span style="font-size:11px"><b>${c[0]}</b><br><span style="color:var(--muted)">${c[1]?"Present":"Needs input"}</span></span></div>`).join("");
+}
+function renderLocation(){
+ const rows=[["Location",$("locationInput").value||"Not provided","User input","Today","User-provided",conf("medium","direct input")],["Population",$("population").value?Number($("population").value).toLocaleString():"Not provided","Manual entry","—","Unverified",conf($("population").value?"medium":"low",$("population").value?"user-entered":"missing")],["Average income",$("income").value?money($("income").value):"Not provided","Manual entry","—","Unverified",conf($("income").value?"medium":"low",$("income").value?"user-entered":"missing")],["Foot traffic",$("footfall").value?Number($("footfall").value).toLocaleString()+"/day":"Not provided","Manual entry","—","Unverified",conf($("footfall").value?"medium":"low",$("footfall").value?"user-entered":"missing")]];
+ $("locationTable").innerHTML=rows.map(r=>`<tr><td><b>${r[0]}</b></td><td>${esc(r[1])}</td><td>${esc(r[2])}</td><td>${r[3]}</td><td><span class="tag">${r[4]}</span></td><td>${r[5]}</td></tr>`).join("");
+ $("loc2").value=$("locationInput").value;
+}
+function renderCompetitors(){
+ const p=competitors.map(x=>+x.price).filter(Boolean),avg=p.length?p.reduce((a,b)=>a+b,0)/p.length:0;
+ $("compStats").innerHTML=[["Observations",competitors.length,"Rows loaded"],["Priced observations",p.length,"Rows with price"],["Average price",avg?money(avg):"N/A","Observed sample"],["Data confidence",p.length>=10?"High":p.length>=5?"Medium":"Low",p.length+" price points"]].map(a=>`<div class="kpi"><div class="label">${a[0]}</div><div class="value">${a[1]}</div><div class="sub">${a[2]}</div></div>`).join("");
+ $("compConfidence").innerHTML=conf(p.length>=10?"high":p.length>=5?"medium":"low",p.length+" price observations");
+ $("competitorBody").innerHTML=competitors.length?competitors.map(c=>`<tr><td>${esc(c.name)}</td><td>${c.distance!==""?c.distance+" km":"—"}</td><td>${esc(c.category||"—")}</td><td>${c.price?money(c.price):"—"}</td><td>${c.rating||"—"}</td><td>${esc(c.products||"—")}</td><td><span class="tag">${esc(c.source||"User data")}</span></td></tr>`).join(""):`<tr><td colspan="7" class="empty">No competitor rows. Import a spreadsheet or add one.</td></tr>`;
+}
+function renderProducts(x){
+ let type=$("businessType").value.toLowerCase(), items=type.includes("bakery")?[["Bread","฿90–฿170","Core category","Several formats can be tested without assuming demand."],["Pastries","฿70–฿140","Impulse / breakfast","Useful to test with morning traffic."],["Cakes","฿350–฿1,200","Higher-ticket","Occasion purchases may increase basket size."],["Cookies","฿45–฿120","Portable","Can complement drinks and gifting."],["Sandwiches","฿90–฿190","Lunch extension","May broaden the target customer base."],["Drinks","฿55–฿140","Basket builder","Can raise average transaction value."]]:[["Core product","฿80–฿250","Core demand","Start with the clearest customer need."],["Premium option","฿180–฿500","Price testing","Tests willingness to pay."],["Bundle","฿150–฿350","Basket size","Can increase transaction value."],["Convenience item","฿50–฿150","Repeat purchase","Low-friction option to test."]];
+ $("opportunities").innerHTML=items.map((o,i)=>`<div class="opportunity"><div class="score">${conf(i<2?"medium":"low","hypothesis")}</div><h4>${o[0]}</h4><p><b>Suggested test price:</b> ${o[1]}</p><p><b>Opportunity type:</b> ${o[2]}</p><p>${o[3]}</p><div class="bar"><i style="width:${72-i*7}%"></i></div><p><b>Next test:</b> compare customer interest against at least 3 verified competitors.</p></div>`).join("");
+}
+function renderPrice(x){
+ $("priceKpis").innerHTML=[["Unit cost",money(x.unitCost),"Ingredients + labour + packaging + allocations"],["Minimum price",money(x.minPrice),"For selected target margin"],["Working price",money(x.rec),"Max of cost floor and observed average"],["Profit / item",money(x.rec-x.unitCost),pct(x.rec?(x.rec-x.unitCost)/x.rec*100:0)+" margin"]].map(a=>`<div class="kpi"><div class="label">${a[0]}</div><div class="value">${a[1]}</div><div class="sub">${a[2]}</div></div>`).join("");
+ $("priceFormula").innerHTML=`<b>Total unit cost</b> = ${money(val("costItem"))} + ${money(val("labourItem"))} + ${money(val("packItem"))} + ${money(val("rentItem"))} + ${money(val("utilItem"))} = <b>${money(x.unitCost)}</b><br><br><b>Minimum selling price</b> = unit cost ÷ (1 − margin) = ${money(x.unitCost)} ÷ (1 − ${val("margin")/100}) = <b>${money(x.minPrice)}</b><br><br><b>Observed competitor average:</b> ${x.avg?money(x.avg):"No usable price observations"}. This is an observed sample, not a verified market-wide average.`;
+}
+function renderFinance(x){
+ $("financeKpis").innerHTML=[["Daily revenue",money(x.c*x.spend),"Customers × average spend"],["Monthly revenue",money(x.rev),"Daily revenue × opening days"],["Monthly expenses",money(x.expenses),"Fixed + variable"],["Monthly profit",money(x.profit),x.profit>=0?"Positive under assumptions":"Negative under assumptions"]].map(a=>`<div class="kpi"><div class="label">${a[0]}</div><div class="value ${x.profit<0&&a[0].includes("profit")?"negative":""}">${a[1]}</div><div class="sub">${a[2]}</div></div>`).join("");
+ $("revenueBreakdown").innerHTML=`<b>Monthly Revenue</b> = ${x.c} customers/day × ${money(x.spend)} average spend × ${x.days} days = <b>${money(x.rev)}</b><br><br><b>Yearly Revenue</b> ≈ <b>${money(x.rev*12)}</b> if the same monthly assumptions hold.`;
+}
+function renderScenarios(x){
+ let rows=[["Customers / day",Math.round(x.c*.65),x.c,Math.round(x.c*1.35)],["Revenue",money(x.rev*.65),money(x.rev),money(x.rev*1.35)],["Expenses",money(x.expenses*1.12),money(x.expenses),money(x.expenses*1.03)],["Profit",money(x.rev*.65-x.expenses*1.12),money(x.profit),money(x.rev*1.35-x.expenses*1.03)],["Profit margin",pct((x.rev*.65-x.expenses*1.12)/(x.rev*.65)*100),pct(x.rev?x.profit/x.rev*100:0),pct((x.rev*1.35-x.expenses*1.03)/(x.rev*1.35)*100)]];
+ $("scenarioBody").innerHTML=rows.map(r=>`<tr><td><b>${r[0]}</b></td><td>${r[1]}</td><td>${r[2]}</td><td>${r[3]}</td></tr>`).join("");
+}
+function renderBreakEven(x){
+ $("breakEvenKpis").innerHTML=[["Fixed costs",money(x.fixed),"Monthly"],["Contribution / item",money(x.contrib),"Price − direct cost"],["Break-even items",isFinite(x.be)?Math.ceil(x.be).toLocaleString():"N/A","Items / month"],["Break-even revenue",isFinite(x.ber)?money(x.ber):"N/A","Sales / month"]].map(a=>`<div class="kpi"><div class="label">${a[0]}</div><div class="value">${a[1]}</div><div class="sub">${a[2]}</div></div>`).join("");
+ $("breakEvenFormula").innerHTML=`<b>Break-even items</b> = fixed costs ÷ contribution per item = ${money(x.fixed)} ÷ ${money(x.contrib)} = <b>${isFinite(x.be)?Math.ceil(x.be).toLocaleString():"not calculable"}</b> items/month.<br><b>Break-even revenue</b> = break-even items × working price = <b>${isFinite(x.ber)?money(x.ber):"N/A"}</b>.`;
+}
+function renderCharts(x){
+ makeChart("summary","summaryChart","doughnut",{labels:["Expenses","Profit"],datasets:[{data:[Math.max(0,x.expenses),Math.max(0,x.profit)]}]});
+ makeChart("comp","compChart","bar",{labels:competitors.map(c=>c.name),datasets:[{label:"Observed price (฿)",data:competitors.map(c=>+c.price||0)}]},{scales:{y:{beginAtZero:true}}});
+ makeChart("price","priceChart","bar",{labels:["Unit cost","Minimum price","Observed avg","Working price"],datasets:[{label:"฿",data:[x.unitCost,x.minPrice,x.avg||0,x.rec]}]},{scales:{y:{beginAtZero:true}}});
+ makeChart("finance","financeChart","bar",{labels:["Revenue","Expenses","Profit"],datasets:[{label:"฿ / month",data:[x.rev,x.expenses,x.profit]}]},{scales:{y:{beginAtZero:true}}});
+ makeChart("scenario","scenarioChart","bar",{labels:["Conservative","Expected","High Demand"],datasets:[{label:"Revenue",data:[x.rev*.65,x.rev,x.rev*1.35]},{label:"Expenses",data:[x.expenses*1.12,x.expenses,x.expenses*1.03]},{label:"Profit",data:[x.rev*.65-x.expenses*1.12,x.profit,x.rev*1.35-x.expenses*1.03]}]},{scales:{y:{beginAtZero:true}}});
+ let max=Math.max(x.ber||0,x.rev*1.5,1000),pts=Array.from({length:9},(_,i)=>max*(i+1)/9),cost=pts.map(v=>x.fixed+v*(x.direct/Math.max(x.rec,1)));
+ makeChart("be","breakEvenChart","line",{labels:pts.map(money),datasets:[{label:"Revenue",data:pts},{label:"Estimated total cost",data:cost}]},{scales:{y:{beginAtZero:true}}});
+}
+function renderReport(){
+ const x=calculations(),b=$("businessType").value,l=$("locationInput").value,t=$("target").value, margin=x.rev?x.profit/x.rev*100:0;
+ $("reportContent").innerHTML=`<div class="report-head"><div class="eyebrow">BUSINESSLENS AI REPORT</div><h2 style="margin:5px 0">${esc(b)} · ${esc(l)}</h2><p style="margin:0;color:var(--muted)">Target customers: ${esc(t)} · Budget: ${money(val("budget"))} · Model status: ${conf(competitors.length>=10?"high":competitors.length>=5?"medium":"low",competitors.length+" competitor observations")}</p><div class="report-grid"><div class="report-stat"><b>${money(x.rev)}</b><span>Monthly revenue</span></div><div class="report-stat"><b>${money(x.expenses)}</b><span>Monthly expenses</span></div><div class="report-stat"><b>${money(x.profit)}</b><span>Monthly profit</span></div><div class="report-stat"><b>${pct(margin)}</b><span>Modelled margin</span></div></div></div>
+ <h2>1. Executive Summary</h2><p>The current model estimates ${money(x.rev)} in monthly revenue and ${money(x.profit)} in monthly profit under the assumptions entered. This is a calculation, not a forecast guarantee.</p>
+ <h2>2. Market & Location</h2><p>The analysis is scoped to <b>${esc(l)}</b>. Live location intelligence is not claimed in this standalone version. Population, income and footfall should be supported by dated external sources before being used as evidence.</p>
+ <h2>3. Competition</h2><p>${competitors.length} competitor observations are loaded. ${x.avg?`The observed average price is ${money(x.avg)} and the median is ${money(x.median)}.`:"There are currently no usable competitor prices."} ${conf(competitors.length>=10?"high":competitors.length>=5?"medium":"low",competitors.length+" rows")}</p>
+ <h2>4. Product Opportunities</h2><p>BusinessLens generated product/category hypotheses from the business type and current context. These should be tested through customer interviews, competitor visits or small-scale pilots rather than treated as established demand.</p>
+ <h2>5. Pricing</h2><p>Unit cost is <b>${money(x.unitCost)}</b>. At a ${val("margin")}% target margin, the mathematical minimum price is <b>${money(x.minPrice)}</b>. The current working price is <b>${money(x.rec)}</b>, using the higher of the cost floor and observed competitor average.</p>
+ <h2>6. Financial Analysis</h2><ul><li>Daily revenue: ${money(x.c*x.spend)}</li><li>Monthly revenue: ${money(x.rev)}</li><li>Monthly expenses: ${money(x.expenses)}</li><li>Monthly profit: ${money(x.profit)}</li><li>Break-even revenue: ${isFinite(x.ber)?money(x.ber):"not calculable"}</li></ul>
+ <h2>7. Scenarios</h2><p>Conservative applies lower customer demand and higher costs; High Demand applies higher demand and slightly stronger cost efficiency. Neither scenario is guaranteed.</p>
+ <h2>8. Risks</h2><ul><li>Demand may be materially different from the customer assumption.</li><li>Rent, labour, supplier and utility costs may change.</li><li>Competitor data may be incomplete or outdated.</li><li>Seasonality, regulations, taxes and unexpected costs may not be fully represented.</li><li>Observed competitor prices are not necessarily representative of the entire market.</li></ul>
+ <h2>9. Data Gaps</h2><ul><li>Verified local population, income and footfall sources.</li><li>Real rent quotations and supplier quotations.</li><li>Broader competitor coverage and source dates.</li><li>Customer survey or pilot sales evidence.</li></ul>
+ <h2>10. Suggested Next Steps</h2><ol><li>Verify at least 10–20 nearby competitors and record source/date.</li><li>Collect actual rent and supplier quotes.</li><li>Interview or survey target customers.</li><li>Test 3–5 products at several prices.</li><li>Replace demo assumptions with evidence and rerun the model.</li></ol>
+ <div class="notice" style="margin-top:18px">⚠️ <b>Decision note:</b> BusinessLens does not determine whether you should open the business. It organizes evidence and assumptions so you can investigate the decision more intelligently.</div>`;
+}
+function addCompetitor(){competitors.push({name:"New competitor",distance:1,category:$("businessType").value,price:100,rating:"",products:"",source:"User data"});updateAll();go("competition")}
+function importFile(e){
+ const file=e.target.files[0];if(!file)return;const reader=new FileReader();
+ reader.onload=ev=>{try{
+  let rows=[];if(file.name.toLowerCase().endsWith(".csv"))rows=parseCSV(ev.target.result);else{const wb=XLSX.read(ev.target.result,{type:"array"}),ws=wb.Sheets[wb.SheetNames[0]];rows=XLSX.utils.sheet_to_json(ws,{defval:""});}
+  if(!rows.length)throw new Error("No readable rows were found.");
+  const keys=Object.keys(rows[0]);const norm=s=>String(s).toLowerCase().replace(/[^a-z0-9]/g,"");
+  const pick=(r,terms)=>{let k=Object.keys(r).find(k=>terms.some(t=>norm(k).includes(t)));return k?r[k]:""};
+  const mapped=rows.map(r=>({name:String(pick(r,["name","competitor","business","bakery","shop"])),distance:parseFloat(String(pick(r,["distance","km"])).replace(/[^0-9.]/g,""))||"",category:String(pick(r,["category","type"])),price:parseFloat(String(pick(r,["averageprice","avgprice","price","cost"])).replace(/[^0-9.]/g,""))||0,rating:parseFloat(String(pick(r,["rating","score"])))||"",products:String(pick(r,["product","products","item"])),source:"Imported spreadsheet"})).filter(r=>r.name||r.category||r.price||r.products);
+  if(!mapped.length)throw new Error("The file opened, but no competitor/product/price fields could be mapped. Try adding headers such as Name, Category, Product and Average Price.");
+  competitors=mapped;$("fileInfo").textContent=`✓ Imported ${mapped.length} usable rows from ${file.name}. Detected headers: ${keys.join(", ")}. Review the mapping before treating the data as evidence.`;$("fileInfo").classList.remove("hidden");toast(`Imported ${mapped.length} rows`);updateAll();go("competition");
+ }catch(err){$("fileInfo").textContent="Import failed: "+err.message;$("fileInfo").classList.remove("hidden");toast("Import failed — see the message.");}};
+ if(file.name.toLowerCase().endsWith(".csv"))reader.readAsText(file);else reader.readAsArrayBuffer(file);e.target.value="";
+}
+function parseCSV(s){let lines=s.trim().split(/\r?\n/);if(lines.length<2)return[];let parse=l=>l.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/).map(v=>v.replace(/^"|"$/g,"").trim());let h=parse(lines[0]);return lines.slice(1).map(l=>{let a=parse(l),o={};h.forEach((k,i)=>o[k]=a[i]??"");return o})}
+function quickAsk(q){$("chatInput").value=q;askAI()}
+function askAI(){
+ let q=$("chatInput").value.trim();if(!q)return;$("chat").innerHTML+=`<div class="msg user">${esc(q)}</div>`;$("chatInput").value="";
+ let x=calculations(),l=q.toLowerCase(),a="";
+ if(l.includes("cost")||l.includes("expensive"))a=`Your current model has ${money(x.fixed)} in fixed costs and ${money(x.variable)} in monthly variable costs. The best way to investigate “high costs” is to change one assumption at a time and identify which line has the largest impact.`;
+ else if(l.includes("profit")||l.includes("increase"))a=`Current modelled profit is ${money(x.profit)}. The main controllable drivers are customers/day (${x.c}), average spend (${money(x.spend)}), unit cost (${money(x.unitCost)}) and fixed costs (${money(x.fixed)}). Test combinations rather than assuming one lever will work.`;
+ else if(l.includes("price"))a=`Your unit cost is ${money(x.unitCost)}. At a ${val("margin")}% target margin, the minimum mathematical price is ${money(x.minPrice)}. The current working price is ${money(x.rec)}. Competitor observations should be verified before using them as market evidence.`;
+ else if(l.includes("risk"))a=`The biggest uncertainties are demand, rent/labour costs, supplier prices, competitor coverage and seasonality. Add dated, sourced observations to raise confidence.`;
+ else if(l.includes("research")||l.includes("missing"))a=`Your highest-value next research steps are: verify nearby competitors, obtain actual rent quotes, collect supplier quotes, estimate real foot traffic, and survey target customers. Record source and date for every external fact.`;
+ else if(l.includes("product")||l.includes("sell"))a=`For a bakery, the current opportunity hypotheses include bread, pastries, cakes, cookies, sandwiches and drinks. They are not claims of demand — test them with customer feedback and local competitor evidence.`;
+ else a=`Based on the current model: ${money(x.rev)} monthly revenue, ${money(x.expenses)} expenses and ${money(x.profit)} profit. Ask me about costs, profit, pricing, risks, products or what to research next.`;
+ setTimeout(()=>{$("chat").innerHTML+=`<div class="msg ai">${a}</div>`;$("chat").scrollTop=$("chat").scrollHeight},180)
+}
+function saveState(){try{let ids=["businessType","locationInput","target","budget","opening","size","description","costItem","labourItem","packItem","rentItem","utilItem","margin","rent","salary","fixedOther","ingredients","packaging","utilities","marketing","fees","variableOther","customersN","spendN","daysN","population","income","footfall","nearby"];let s={};ids.forEach(id=>$(id)&&(s[id]=$(id).value));localStorage.setItem("businesslens.v2",JSON.stringify(s))}catch(e){}}
+function loadState(){try{let s=JSON.parse(localStorage.getItem("businesslens.v2")||"{}");Object.entries(s).forEach(([id,v])=>$(id)&&($(id).value=v))}catch(e){}}
+function clearLocal(){localStorage.removeItem("businesslens.v2");toast("Saved state cleared. Reloading…");setTimeout(()=>location.reload(),500)}
+function saveAndUpdate(){saveState();updateAll()}
+function analyze(){updateAll();go("report");toast("Report generated from current assumptions.")}
+function downloadReport(){renderReport();let blob=new Blob([$("reportContent").innerText],{type:"text/plain"}),a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="BusinessLens-AI-Report.txt";a.click();URL.revokeObjectURL(a.href)}
+function presentationToggle(){document.body.classList.toggle("presentation",$("presentationMode").checked);toast($("presentationMode").checked?"Presentation mode enabled":"Presentation mode disabled")}
+function newAnalysis(){if(!confirm("Start a new analysis? This will reset the current model."))return;["businessType","locationInput","target","description"].forEach(id=>$(id).value="");["budget","costItem","labourItem","packItem","rentItem","utilItem","margin","rent","salary","fixedOther","ingredients","packaging","utilities","marketing","fees","variableOther"].forEach(id=>$(id).value=0);$("customers").value=$("customersN").value=50;$("spend").value=$("spendN").value=100;$("days").value=$("daysN").value=26;competitors=[];updateAll();go("dashboard");toast("New analysis created.")}
+function loadDemo(){
+ $("businessType").value="Bakery";$("locationInput").value="Sukhumvit, Bangkok";$("target").value="Students, office workers and families";$("budget").value=1000000;$("size").value="Small";$("opening").value="2027-01-15";
+ $("costItem").value=65;$("labourItem").value=12;$("packItem").value=5;$("rentItem").value=8;$("utilItem").value=3;$("margin").value=40;$("rent").value=80000;$("salary").value=90000;$("fixedOther").value=15000;$("ingredients").value=65000;$("packaging").value=12000;$("utilities").value=18000;$("marketing").value=12000;$("fees").value=10000;$("variableOther").value=5000;$("customers").value=$("customersN").value=100;$("spend").value=$("spendN").value=150;$("days").value=$("daysN").value=26;
+ competitors=[{name:"Demo Bakery A",distance:.5,category:"Bakery",price:120,rating:4.5,products:"Bread / Pastries",source:"DEMO DATA"},{name:"Demo Bakery B",distance:1.1,category:"Bakery",price:155,rating:4.3,products:"Cakes / Pastries",source:"DEMO DATA"},{name:"Demo Bakery C",distance:1.8,category:"Bakery",price:135,rating:4.6,products:"Bread / Cookies",source:"DEMO DATA"},{name:"Demo Café D",distance:2.2,category:"Café",price:165,rating:4.4,products:"Drinks / Sandwiches",source:"DEMO DATA"},{name:"Demo Bakehouse E",distance:2.7,category:"Bakery",price:180,rating:4.2,products:"Sourdough / Cakes",source:"DEMO DATA"}];
+ $("dataStatus").textContent="DEMO DATA — NOT LIVE DATA";updateAll();go("dashboard");toast("Demo loaded — all sample data is clearly labelled.")}
+loadState();updateAll();
+</script>
+</body>
+</html>
